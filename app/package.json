@@ -1,0 +1,16 @@
+{
+  "title": "CacheBrowser",
+  "name": "cachebrowser",
+  "version": "0.1.0",
+  "description": "Cachebrowser Add-On",
+  "author": "Hadi Zolfaghari",
+  "license": "MIT",
+  "main": "main.js",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "dependencies": {
+    "lodash": "*"
+  }
+}

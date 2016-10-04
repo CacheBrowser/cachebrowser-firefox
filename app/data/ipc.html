@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+  </head>
+  <body>
+    <script type="text/javascript">
+      try {
+        addon.port.on('connect', function(url) {
+          var ws = new WebSocket(url);
+          var connected = false;
+
+          ws.onopen = function() {
+            connected = true;
+            addon.port.emit('open');
+          }
+
+          ws.onclose = function() {
+            connected = false;
+            addon.port.emit('close');
+          }
+
+          ws.onmessage = function(message) {
+            addon.port.emit('message', message.data);
+          }
+
+          addon.port.on('send_message', function(message) {
+            if (connected) {
+              ws.send(message);
+            }
+          });
+        });
+
+        addon.port.emit('loaded');
+      } catch(e) {
+        console.log(e);
+      }
+
+    </script>
+  </body>
+</html>

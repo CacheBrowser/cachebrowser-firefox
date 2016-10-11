@@ -17,6 +17,26 @@ var cacheBrowseButton = buttons.ActionButton({
   onClick: onCacheBrowseClick
 });
 
+function setIcon(enabled) {
+  if (enabled === undefined) {
+    enabled = proxy.isEnabled();
+  }
+
+  var icon = enabled ? './images/icon.png' : './images/icon-disabled.png';
+  cacheBrowseButton.icon = icon;
+}
+
+function onCacheBrowseClick(state) {
+  var enabled = proxy.isEnabled();
+  if (enabled) {
+    proxy.disableProxy();
+  } else {
+    proxy.enableProxy();
+  }
+  setIcon(!enabled);
+}
+
+/*
 function setTabIcon(tab) {
   var website = websiteManager.websiteFromUrl(tab.url);
   var active = websiteManager.isWebsiteActive(website);
@@ -25,6 +45,7 @@ function setTabIcon(tab) {
 
   cacheBrowseButton.icon = icon;
 }
+
 
 function onCacheBrowseClick(state) {
   let website = websiteManager.websiteFromUrl(tabs.activeTab.url);
@@ -74,7 +95,7 @@ websiteManager.on('website-changed', () => {
     proxy.disableProxy();
   }
 });
-
+*/
 
 ipc.on('connect', () => {
   /*ipc.subscribe('request-log', function(message, channel) {

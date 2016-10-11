@@ -9,13 +9,22 @@
           var ws = new WebSocket(url);
           var connected = false;
 
+          function sendMessage(message) {
+            if (connected) {
+              ws.send(message);
+            }
+          }
+
           ws.onopen = function() {
             connected = true;
+
+            addon.port.on('send_message', sendMessage);
             addon.port.emit('open');
           }
 
           ws.onclose = function() {
             connected = false;
+            addon.port.removeListener('send_message', sendMessage);
             addon.port.emit('close');
           }
 
@@ -23,11 +32,6 @@
             addon.port.emit('message', message.data);
           }
 
-          addon.port.on('send_message', function(message) {
-            if (connected) {
-              ws.send(message);
-            }
-          });
         });
 
         addon.port.emit('loaded');

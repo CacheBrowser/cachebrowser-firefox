@@ -1,4 +1,5 @@
 import { Page } from 'sdk/page-worker';
+import { setTimeout } from 'sdk/timers'
 
 import Events from './lib/minivents';
 import Reconnector from './lib/websocket.js';
@@ -6,6 +7,7 @@ import Reconnector from './lib/websocket.js';
 export class IPCManager {
   constructor() {
     Events(this);
+    this.wsUrl = 'ws://127.0.0.1:9000';
     this.handlers = {};
     this.rpcResponseHandlers = {};
     this.rpcRequestCounter = 0;
@@ -19,6 +21,8 @@ export class IPCManager {
 
   initializePageWorker() {
     const self = this;
+    var backOff = 500;
+    var maxBackOff = 60000;
 
     var pw = Page({
       contentURL: './ipc.html',
@@ -38,6 +42,14 @@ export class IPCManager {
       console.log("IPC connection closed");
       self.connected = false;
       self.emit('disconnect');
+
+
+      backOff = backOff * 2;
+      if (backOff > maxBackOff) {
+        backOff = maxBackOff;
+      }
+      console.log("Reconnect attempt in ", backOff / 1000, " seconds");
+      setTimeout(() => pw.port.emit('connect', self.wsUrl), backOff);
     });
 
     pw.port.on('message', message => {
@@ -56,7 +68,7 @@ export class IPCManager {
     };
 
     this._connect = () => {
-      pw.port.emit('connect', 'ws://127.0.0.1:9000')
+      pw.port.emit('connect', self.wsUrl);
     };
 
     pw.port.on('loaded', this._connect);

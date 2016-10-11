@@ -28,4 +28,11 @@ export class ProxyManager{
     console.debug("Disabling Proxy");
     prefsvc.set("network.proxy.type", 5);
   }
+
+  isEnabled() {
+    var host = prefsvc.get("network.proxy.http", null);
+    var proxyType = prefsvc.get("network.proxy.type", null);
+
+    return host == this.proxySettings.host && proxyType == 1;
+  }
 }
